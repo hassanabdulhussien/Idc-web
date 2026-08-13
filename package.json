@@ -2,6 +2,7 @@
   "name": "idc-web",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "\"IDC\" — playful pixel single-page interactive joke (Vite + React)",
   "scripts": {
     "dev": "vite",
