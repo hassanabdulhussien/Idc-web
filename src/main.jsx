@@ -7,7 +7,9 @@ import './styles.css'
 console.log('IDC: main.jsx loaded')
 
 try {
-  createRoot(document.getElementById('root')).render(
+  const rootEl = document.getElementById('root')
+  if (!rootEl) throw new Error('Root element #root not found')
+  createRoot(rootEl).render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
