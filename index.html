@@ -10,6 +10,58 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Error overlay: surface runtime errors to the page so we can see what's failing in production -->
+    <script>
+      (function(){
+        function showErrorOverlay(msg){
+          try{
+            var existing = document.getElementById('error-overlay');
+            if(existing) existing.remove();
+            var div = document.createElement('div');
+            div.id = 'error-overlay';
+            div.style.position = 'fixed';
+            div.style.left = '0';
+            div.style.top = '0';
+            div.style.right = '0';
+            div.style.background = '#fff5f5';
+            div.style.color = '#8b0000';
+            div.style.zIndex = '99999';
+            div.style.padding = '12px 16px';
+            div.style.fontFamily = 'monospace, monospace';
+            div.style.whiteSpace = 'pre-wrap';
+            div.style.maxHeight = '60vh';
+            div.style.overflow = 'auto';
+            div.innerText = 'Runtime error:\n\n' + String(msg);
+            document.body.appendChild(div);
+          }catch(e){
+            try{ console.error('Failed to show overlay', e) }catch(_){}
+          }
+        }
+
+        window.addEventListener('error', function(ev){
+          var msg = (ev && ev.error && (ev.error.stack || ev.error.message)) || ev.message || String(ev);
+          console.error('window.error', ev);
+          if(document.readyState === 'loading'){
+            window.addEventListener('DOMContentLoaded', function(){ showErrorOverlay(msg) });
+          } else {
+            showErrorOverlay(msg);
+          }
+        });
+
+        window.addEventListener('unhandledrejection', function(ev){
+          var reason = ev && ev.reason;
+          var msg = (reason && (reason.stack || reason.message)) || String(reason) || 'Unhandled promise rejection';
+          console.error('unhandledrejection', ev);
+          if(document.readyState === 'loading'){
+            window.addEventListener('DOMContentLoaded', function(){ showErrorOverlay(msg) });
+          } else {
+            showErrorOverlay(msg);
+          }
+        });
+      })();
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
